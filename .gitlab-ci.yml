@@ -89,7 +89,7 @@ stages:
 
 Deploy:
   stage: deployment
-  image: python:latest
+  image: google/cloud-sdk
   extends:
     - .helm-deploy
   tags:
