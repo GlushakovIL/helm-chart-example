@@ -85,7 +85,7 @@ variables:
   VALUE_FILES: values.yaml
   HELM_VERSION: v2.16.3
   SECRET: ${STAGING_SECRET}
-  HELM_REPOS: elastic#https://helm.elastic.co,banzaicloud-stable#https://kubernetes-charts.banzaicloud.com,jetstack#https://charts.jetstack.io,bx-staging#https://storage.googleapis.com/bx-helm-charts-staging,bx-prod#https://storage.googleapis.com/bx-helm-charts,flagger#https://flagger.app
+  HELM_REPOS: elastic#https://helm.elastic.co,banzaicloud-stable#https://kubernetes-charts.banzaicloud.com,jetstack#https://charts.jetstack.io,bx-staging#https://storage.googleapis.com/bx-helm-charts-staging,bx-prod#https://storage.googleapis.com/bx-helm-charts,flagger#https://flagger.app,bitnami#https://charts.bitnami.com/bitnami
 
 stages:
   - deployment
