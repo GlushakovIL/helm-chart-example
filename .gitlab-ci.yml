@@ -80,6 +80,20 @@ Docker build:
   tags:
     - amazon
 
+Docker build app: 
+  stage: build
+  variables:
+    DOCKER_FILE: Dockerfile.app
+  before_script: 
+    - ls 
+  extends: 
+    - .docker-build-app
+  only:
+    refs:
+      - master
+  tags: 
+    - amazon
+
 Deploy:
   stage: deployment
   extends:
