@@ -67,6 +67,9 @@ stages:
 
 Docker build: 
   stage: build
+  only:
+    changes:
+      - Dockerfile.base
   variables:
     DOCKER_FILE: Dockerfile.base
   before_script:
@@ -76,9 +79,6 @@ Docker build:
     - .docker-build-base
   tags:
     - amazon
-  only:
-    refs:
-      - master
 
 Deploy:
   stage: deployment
