@@ -7,7 +7,7 @@ before_script:
     # auth
     gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
     pip install awscli
-    aws eks --region eu-west-1 update-kubeconfig --name gitlab-ops-cluster
+    aws eks --region eu-west-1 update-kubeconfig --name staging-eks
 
     #kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
