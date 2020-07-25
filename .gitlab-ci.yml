@@ -1,4 +1,4 @@
-include: "./helm-init.yaml"
+include: "helm-init.yaml"
 
 .helm-deploy:
   variables:
