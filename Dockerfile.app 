@@ -1,0 +1,28 @@
+FROM 539628618787.dkr.ecr.eu-west-1.amazonaws.com/hostingx-web-base:latest
+
+COPY conf/supervisord.conf /etc/supervisord.conf
+
+# Copy our nginx config
+RUN rm -Rf /etc/nginx/nginx.conf
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+
+# nginx site conf
+RUN mkdir -p /etc/nginx/sites-available/ && \
+  mkdir -p /etc/nginx/sites-enabled/ && \
+  mkdir -p /etc/nginx/ssl/ && \
+  rm -Rf /var/www/* && \
+  mkdir /var/www/html/
+VOLUME /var/www/html /var/www/html
+COPY conf/nginx-site.conf /etc/nginx/sites-available/default.conf
+COPY conf/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
+RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+
+COPY scripts/start.sh /start.sh
+RUN chmod 755 /start.sh
+
+# copy in code
+COPY public_html/ /var/www/html/
+EXPOSE 443 80
+CMD ["/start.sh"]
+
+

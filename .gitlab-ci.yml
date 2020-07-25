@@ -86,9 +86,44 @@ variables:
   HELM_VERSION: v2.16.3
   SECRET: ${STAGING_SECRET}
   HELM_REPOS: elastic#https://helm.elastic.co,banzaicloud-stable#https://kubernetes-charts.banzaicloud.com,jetstack#https://charts.jetstack.io,bx-staging#https://storage.googleapis.com/bx-helm-charts-staging,bx-prod#https://storage.googleapis.com/bx-helm-charts,flagger#https://flagger.app,bitnami#https://charts.bitnami.com/bitnami
+.docker-build-base:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+
+  script: |
+    /kaniko/executor --cache=true --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/${DOCKER_FILE} \
+                     --destination 539628618787.dkr.ecr.eu-west-1.amazonaws.com/${BASE_IMAGE_NAME}:${CI_COMMIT_SHORT_SHA} \
+                     --destination 539628618787.dkr.ecr.eu-west-1.amazonaws.com/${BASE_IMAGE_NAME}:latest
+
+.docker-build-app:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+
+  script: |
+    /kaniko/executor --cache=false --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/${DOCKER_FILE} \
+                     --destination 539628618787.dkr.ecr.eu-west-1.amazonaws.com/${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA} \
+                     --destination 539628618787.dkr.ecr.eu-west-1.amazonaws.com/${IMAGE_NAME}:latest
 
 stages:
+  - build
   - deployment
+
+Docker build: 
+  stage: build
+  variables:
+    DOCKER_FILE: Dockerfile.base
+  before_script:
+    - |
+        aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 539628618787.dkr.ecr.eu-west-1.amazonaws.com
+  extends: 
+    - .docker-build-base
+  tags:
+    - amazon
+  only:
+    refs:
+      - master
 
 Deploy:
   stage: deployment
