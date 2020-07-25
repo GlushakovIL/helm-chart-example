@@ -57,7 +57,7 @@ variables:
     entrypoint: [""]
 
   script: |
-    /kaniko/executor --cache=true --context ${CI_PROJECT_DIR} --dockerfile ${CI_PROJECT_DIR}/${DOCKER_FILE} \
+    /kaniko/executor --cache=false --context ${CI_PROJECT_DIR} --dockerfile ${CI_PROJECT_DIR}/${DOCKER_FILE} \
                      --destination 539628618787.dkr.ecr.eu-west-1.amazonaws.com/${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA} \
                      --destination 539628618787.dkr.ecr.eu-west-1.amazonaws.com/${IMAGE_NAME}:latest
 
