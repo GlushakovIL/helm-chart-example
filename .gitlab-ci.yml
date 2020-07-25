@@ -5,7 +5,7 @@ before_script:
   #
   - |
     # auth
-    gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
+    #gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
     pip install awscli
     aws eks --region eu-west-1 update-kubeconfig --name staging-eks
 
@@ -86,6 +86,7 @@ variables:
   HELM_VERSION: v2.16.3
   SECRET: ${STAGING_SECRET}
   HELM_REPOS: elastic#https://helm.elastic.co,banzaicloud-stable#https://kubernetes-charts.banzaicloud.com,jetstack#https://charts.jetstack.io,bx-staging#https://storage.googleapis.com/bx-helm-charts-staging,bx-prod#https://storage.googleapis.com/bx-helm-charts,flagger#https://flagger.app,bitnami#https://charts.bitnami.com/bitnami
+
 .docker-build-base:
   image:
     name: gcr.io/kaniko-project/executor:debug
