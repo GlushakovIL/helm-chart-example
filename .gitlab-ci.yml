@@ -48,7 +48,7 @@ before_script:
 
 .helm-deploy:
   image:
-    name: gcr.io/hostingx-production/gitlab-executor
+    name: 539628618787.dkr.ecr.eu-west-1.amazonaws.com/gitlab-executor:latest
     entrypoint: [""]
   script:
     - |
