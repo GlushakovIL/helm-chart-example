@@ -114,9 +114,6 @@ Docker build:
   stage: build
   variables:
     DOCKER_FILE: Dockerfile.base
-  before_script:
-    - |
-        aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 539628618787.dkr.ecr.eu-west-1.amazonaws.com
   extends: 
     - .docker-build-base
   tags:
