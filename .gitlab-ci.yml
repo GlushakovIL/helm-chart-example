@@ -89,7 +89,7 @@ stages:
 
 Deploy:
   stage: deployment
-  image: gcr.io/hostingx-production/gitlab-executor
+  image: google/cloud-sdk:latest
   extends:
     - .helm-deploy
   tags:
