@@ -1,0 +1,99 @@
+before_script:
+  # remove existing success file
+  - if [ -n "${SUCCESS_FILE}" ] && [ -e "${SUCCESS_FILE}" ]; then rm -f "${SUCCESS_FILE}"; fi
+  - if [[ "${EXTRA_OPTION}" =~ "--debug" ]]; then echo "It's not allowed to use debug option --debug" exit 1; fi
+  #
+  - |
+    # auth
+    gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
+    pip install awscli
+    aws eks --region eu-west-1 update-kubeconfig --name gitlab-ops-cluster
+
+    #kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+
+    # helm install
+    curl -s "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz" -o "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+    tar -xzf "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz" -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
+    helm init --client-only
+
+    #EXTRA HELM REPOS
+    IFS=',' read -ra REPOS < <(printf '%s\n' "$HELM_REPOS")
+    for repo_name_url in "${REPOS[@]}"; do
+      IFS='#' read -ra REPO < <(printf '%s\n' "$repo_name_url")
+      helm repo add "${REPO[0]}" "${REPO[1]}"
+    done
+
+    CHART="${CHART_URL}"
+    if [ ! "${CHART_URL%%https://*}" ]; then
+      helm repo add bx-chart-repo "${CHART_URL}"
+      CHART=bx-chart-repo/bx-chart
+    elif [[ -e "${CHART_URL}/requirements.yaml" ]]; then
+      helm dependency build "${CHART_URL}"
+    fi
+
+    helm repo update
+
+    # secret
+    if [ ! -f "${SECRET}" ]; then
+      echo "${SECRET}" | base64 -d > secret.yaml
+      SECRET=secret.yaml
+    fi
+
+    # determine values files
+    if [ -n "${VALUE_FILES}" ]; then
+      VALUES=`echo "${VALUE_FILES}"| sed 's/,/ -f /g'`
+    else
+      VALUES="${VALUE_FILE}"
+    fi
+
+.helm-deploy:
+  image:
+    name: gcr.io/hostingx-production/gitlab-executor
+    entrypoint: [""]
+  script:
+    - |
+      # helm deploy
+      echo "Deploying "${RELEASE_NAME}"..."
+      helm upgrade -i ${RELEASE_NAME} ${CHART} -f ${VALUES} -f ${SECRET} --set global.tag=${CI_COMMIT_SHORT_SHA} --namespace ${RELEASE_NAMESPACE} ${EXTRA_OPTION}
+
+      base="${DEPLOYMENT_ENVIRONMENT}-${CI_COMMIT_SHORT_SHA}-${CI_PIPELINE_ID}"
+      tag=$(printf "%s-%s" "${base}" "$(date +%F_%H%M%S)")
+
+      release tag --id "${CI_PROJECT_ID}" \
+        --name "${tag}" \
+        --tagname "${tag}" \
+        --description "${tag} was deployed to ${DEPLOYMENT_ENVIRONMENT}" \
+        --ref "${CI_COMMIT_SHORT_SHA}"
+    # create success file if execution gets this far
+    - if [ -n "${SUCCESS_FILE}" ]; then touch "${SUCCESS_FILE}"; fi
+
+variables:
+  BASE_IMAGE_NAME: hostingx-web-base
+  IMAGE_NAME: shop-web
+  GCP_PROJECT: hostingx-production
+  KUBERNETES_CLUSTER: hostingx-production-cluster
+  KUBERNETES_REGION: europe-west4
+  CHART_URL: ${CI_PROJECT_DIR}/helm-chart
+  CERT_MANAGER_VERSION: 0.14.1
+  RELEASE_NAME: shop
+  RELEASE_NAMESPACE: shop-web
+  COMMON_HELM_VALUES: helm-values
+  NGINX_ING_YAML: nginx-ingress.yaml
+  VALUE_FILES: helm-chart/values.yaml,helm-chart/charts-local/hostingx_www/values.yaml
+  HELM_VERSION: v2.16.3
+  SECRET: ${STAGING_SECRET}
+  HELM_REPOS: elastic#https://helm.elastic.co,banzaicloud-stable#https://kubernetes-charts.banzaicloud.com,jetstack#https://charts.jetstack.io,bx-staging#https://storage.googleapis.com/bx-helm-charts-staging,bx-prod#https://storage.googleapis.com/bx-helm-charts,flagger#https://flagger.app
+
+stages:
+  - deployment
+
+Deploy:
+  stage: deployment
+  image: python:latest
+  extends:
+    - .helm-deploy
+  tags:
+    - amazon
+  only:
+    refs:
+      - master
