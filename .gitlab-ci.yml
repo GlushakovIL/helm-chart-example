@@ -82,10 +82,10 @@ Docker build:
 
 Docker build app: 
   stage: build
-  variables:
-    DOCKER_FILE: Dockerfile.app
   before_script: 
     - ls 
+  variables:
+    DOCKER_FILE: Dockerfile
   extends: 
     - .docker-build-app
   only:
