@@ -76,13 +76,13 @@ variables:
   GCP_PROJECT: hostingx-production
   KUBERNETES_CLUSTER: hostingx-production-cluster
   KUBERNETES_REGION: europe-west4
-  CHART_URL: ${CI_PROJECT_DIR}/helm-chart
+  CHART_URL: ${CI_PROJECT_DIR}
   CERT_MANAGER_VERSION: 0.14.1
   RELEASE_NAME: shop
   RELEASE_NAMESPACE: shop-web
   COMMON_HELM_VALUES: helm-values
   NGINX_ING_YAML: nginx-ingress.yaml
-  VALUE_FILES: helm-chart/values.yaml,helm-chart/charts-local/hostingx_www/values.yaml
+  VALUE_FILES: values.yaml
   HELM_VERSION: v2.16.3
   SECRET: ${STAGING_SECRET}
   HELM_REPOS: elastic#https://helm.elastic.co,banzaicloud-stable#https://kubernetes-charts.banzaicloud.com,jetstack#https://charts.jetstack.io,bx-staging#https://storage.googleapis.com/bx-helm-charts-staging,bx-prod#https://storage.googleapis.com/bx-helm-charts,flagger#https://flagger.app
