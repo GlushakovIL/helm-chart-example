@@ -89,7 +89,6 @@ stages:
 
 Deploy:
   stage: deployment
-  image: google/cloud-sdk:latest
   extends:
     - .helm-deploy
   tags:
