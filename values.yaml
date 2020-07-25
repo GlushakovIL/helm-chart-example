@@ -12,9 +12,9 @@
 ## ref: https://hub.docker.com/r/bitnami/wordpress/tags/
 ##
 image:
-  registry: docker.io
-  repository: bitnami/wordpress
-  tag: 5.4.2-debian-10-r18
+  registry: 539628618787.dkr.ecr.eu-west-1.amazonaws.com
+  repository: shop-web
+  tag: latest
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
