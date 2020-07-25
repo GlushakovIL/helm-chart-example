@@ -1,0 +1,47 @@
+before_script:
+  # remove existing success file
+  - if [ -n "${SUCCESS_FILE}" ] && [ -e "${SUCCESS_FILE}" ]; then rm -f "${SUCCESS_FILE}"; fi
+  - if [[ "${EXTRA_OPTION}" =~ "--debug" ]]; then echo "It's not allowed to use debug option --debug" exit 1; fi
+  #
+  - |
+    # auth
+    gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
+    pip install awscli
+    aws eks --region eu-west-1 update-kubeconfig --name staging-eks
+
+    #kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+
+    # helm install
+    curl -s "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz" -o "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+    tar -xzf "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz" -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
+    helm init --client-only
+
+    #EXTRA HELM REPOS
+    IFS=',' read -ra REPOS < <(printf '%s\n' "$HELM_REPOS")
+    for repo_name_url in "${REPOS[@]}"; do
+      IFS='#' read -ra REPO < <(printf '%s\n' "$repo_name_url")
+      helm repo add "${REPO[0]}" "${REPO[1]}"
+    done
+
+    CHART="${CHART_URL}"
+    if [ ! "${CHART_URL%%https://*}" ]; then
+      helm repo add bx-chart-repo "${CHART_URL}"
+      CHART=bx-chart-repo/bx-chart
+    elif [[ -e "${CHART_URL}/requirements.yaml" ]]; then
+      helm dependency build "${CHART_URL}"
+    fi
+
+    helm repo update
+
+    # secret
+    if [ ! -f "${SECRET}" ]; then
+      echo "${SECRET}" | base64 -d > secret.yaml
+      SECRET=secret.yaml
+    fi
+
+    # determine values files
+    if [ -n "${VALUE_FILES}" ]; then
+      VALUES=`echo "${VALUE_FILES}"| sed 's/,/ -f /g'`
+    else
+      VALUES="${VALUE_FILE}"
+    fi
