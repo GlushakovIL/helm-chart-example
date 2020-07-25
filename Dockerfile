@@ -84,15 +84,7 @@ RUN set -ex; \
 # upstream tarballs include ./wordpress/ so this gives us /usr/src/wordpress
 	tar -xzf wordpress.tar.gz -C /usr/src/; \
 	rm wordpress.tar.gz; \
-	chown -R www-data:www-data /usr/src/wordpress; \
-# pre-create wp-content (and single-level children) for folks who want to bind-mount themes, etc so permissions are pre-created properly instead of root:root
-	mkdir wp-content; \
-	for dir in /usr/src/wordpress/wp-content/*/; do \
-		dir="$(basename "${dir%/}")"; \
-		mkdir "wp-content/$dir"; \
-	done; \
-	chown -R www-data:www-data wp-content; \
-	chmod -R 777 wp-content
+	chown -R www-data:www-data /usr/src/wordpress; 
 RUN mkdir /bitnami
 COPY www/wp-content /bitami/wp-content
 COPY www/wp-config.php /bitami/wp-config.php
