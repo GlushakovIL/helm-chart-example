@@ -11,15 +11,15 @@ RUN set -ex; \
 	rm wordpress.tar.gz; \
 	chown -R www-data:www-data /usr/src/wordpress; 
 RUN mkdir /bitnami
-COPY www/wp-content /bitami/wp-content
-COPY www/wp-config.php /bitami/wp-config.php
+COPY www/wp-content /bitnami/wp-content
+COPY www/wp-config.php /bitnami/wp-config.php
 RUN ln -s /bitami/wp-content /var/www/html/wp-content
 RUN ln -s /bitami/wp-config.php /var/www/html/wp-config.php
 VOLUME /var/www/html
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["php-fpm"]
 
 
