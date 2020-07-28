@@ -30,7 +30,8 @@ before_script:
     elif [[ -e "${CHART_URL}/requirements.yaml" ]]; then
       helm dependency build "${CHART_URL}"
     fi
-
+    rm -rf ~/.helm/cache/archive/*
+    rm -rf ~/.helm/repository/cache/*
     helm repo update
 
     # secret
