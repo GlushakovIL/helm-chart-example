@@ -249,7 +249,7 @@ EOPHP
 		# 	set_config 'WP_DEBUG' 1 boolean
 		# fi
 
-		# if ! TERM=dumb php -- <<'EOPHP'
+		if ! TERM=dumb php -- <<'EOPHP'
 <?php
 // database might not exist, so let's try creating it (just to be safe)
 
