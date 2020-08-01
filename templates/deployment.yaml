@@ -52,6 +52,9 @@ spec:
         - name: wordpress
           image: {{ template "wordpress.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          securityContext:
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            fsGroup: {{ .Values.securityContext.fsGroup }}
           env:
             {{- if .Values.image.debug }}
             - name: NAMI_DEBUG
