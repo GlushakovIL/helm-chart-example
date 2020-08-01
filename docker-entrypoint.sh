@@ -55,13 +55,14 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		if [ -n "$(find -mindepth 1 -maxdepth 1 -not -name wp-content)" ]; then
 			echo >&2 "WARNING: $PWD is not empty! (copying anyhow)"
 		fi
-        rm -rf /usr/src/wordpress/wp-content
+        
 		sourceTarArgs=(
 			--create
 			--file -
 			--directory /usr/src/wordpress
 			--owner "$user" --group "$group"
 		)
+        rm -rf /usr/src/wordpress/wp-content
 		targetTarArgs=(
 			--extract
 			--file -
