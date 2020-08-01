@@ -241,15 +241,15 @@ EOPHP
 		# 	fi
 		# done
 
-		if [ "$WORDPRESS_TABLE_PREFIX" ]; then
-			set_config '$table_prefix' "$WORDPRESS_TABLE_PREFIX"
-		fi
+		# if [ "$WORDPRESS_TABLE_PREFIX" ]; then
+		# 	set_config '$table_prefix' "$WORDPRESS_TABLE_PREFIX"
+		# fi
 
-		if [ "$WORDPRESS_DEBUG" ]; then
-			set_config 'WP_DEBUG' 1 boolean
-		fi
+		# if [ "$WORDPRESS_DEBUG" ]; then
+		# 	set_config 'WP_DEBUG' 1 boolean
+		# fi
 
-		if ! TERM=dumb php -- <<'EOPHP'
+		# if ! TERM=dumb php -- <<'EOPHP'
 <?php
 // database might not exist, so let's try creating it (just to be safe)
 
