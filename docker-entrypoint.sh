@@ -49,7 +49,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		# if the directory exists and WordPress doesn't appear to be installed AND the permissions of it are root:root, let's chown it (likely a Docker-created directory)
 		if [ "$(id -u)" = '0' ] && [ "$(stat -c '%u:%g' .)" = '0:0' ]; then
 			chown "$user:$group" .
-            rm -rf /usr/src/wordpress/wp-content
+        rm -rf /usr/src/wordpress/wp-content
 		fi
 
 		echo >&2 "WordPress not found in $PWD - copying now..."
@@ -80,7 +80,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 			contentPath="${contentDir#/bitnami/}" # "wp-content/plugins/akismet", etc.
             ln -s $contentDir $PWD/$contentPath
 			if [ -d "$PWD/$contentPath" ]; then
-			    chown "$user:$group" .
+			    chown "$user:$group" $PWD
 				echo >&2 "WARNING: '$PWD/$contentPath' exists! (not copying the WordPress version)"
 				sourceTarArgs+=( --exclude "./$contentPath" )
 			fi
