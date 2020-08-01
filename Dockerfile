@@ -13,8 +13,10 @@ RUN set -ex; \
 RUN mkdir /bitnami
 COPY www/wp-content /bitnami/wp-content
 COPY www/wp-config.php /bitnami/wp-config.php
-RUN ln -s /bitami/wp-content /var/www/html/wp-content
-RUN ln -s /bitami/wp-config.php /var/www/html/wp-config.php
+RUN ln -s /bitnami/wp-content /var/www/html/wp-content
+RUN ln -s /bitnami/wp-config.php /var/www/html/wp-config.php
+RUN chown -R www-data:www-data /bitnami 
+RUN chown -R www-data:www-data /var/www/html
 VOLUME /var/www/html
 
 COPY docker-entrypoint.sh /usr/local/bin/

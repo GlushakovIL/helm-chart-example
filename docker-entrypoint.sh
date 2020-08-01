@@ -55,6 +55,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		if [ -n "$(find -mindepth 1 -maxdepth 1 -not -name wp-content)" ]; then
 			echo >&2 "WARNING: $PWD is not empty! (copying anyhow)"
 		fi
+        rm -rf /usr/src/wordpress/wp-content
 		sourceTarArgs=(
 			--create
 			--file -
@@ -71,15 +72,18 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		fi
 		# loop over "pluggable" content in the source, and if it already exists in the destination, skip it
 		# https://github.com/docker-library/wordpress/issues/506 ("wp-content" persisted, "akismet" updated, WordPress container restarted/recreated, "akismet" downgraded)
-		for contentDir in /usr/src/wordpress/wp-content/*/*/; do
+		for contentDir in /bitnami/wp-content/*/*/; do
 			contentDir="${contentDir%/}"
 			[ -d "$contentDir" ] || continue
-			contentPath="${contentDir#/usr/src/wordpress/}" # "wp-content/plugins/akismet", etc.
+			contentPath="${contentDir#/bitnami/}" # "wp-content/plugins/akismet", etc.
+            ln -s $contentDir $PWD/$contentPath
 			if [ -d "$PWD/$contentPath" ]; then
+			    chown "$user:$group" .
 				echo >&2 "WARNING: '$PWD/$contentPath' exists! (not copying the WordPress version)"
 				sourceTarArgs+=( --exclude "./$contentPath" )
 			fi
 		done
+        ln -s /bitnami/wp-content /var/www/html/wp-content
 		tar "${sourceTarArgs[@]}" . | tar "${targetTarArgs[@]}"
 		echo >&2 "Complete! WordPress has been successfully copied to $PWD"
 		if [ ! -e .htaccess ]; then
