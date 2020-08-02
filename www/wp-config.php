@@ -36,7 +36,7 @@ define('DB_USER', 'mihalich_wp1');
 define('DB_PASSWORD', 'F.hOA0hpOBIsIBiupYP75');
 
 /** MySQL hostname */
-define('DB_HOST', 'hostingx-mysql');
+define('DB_HOST', 'shop-mariadb');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
