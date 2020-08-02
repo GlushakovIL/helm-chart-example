@@ -244,7 +244,7 @@ readinessProbeHeaders: {}
 ## For minikube, set this to NodePort, elsewhere use LoadBalancer or ClusterIP
 ##
 service:
-  type: LoadBalancer
+  type: NodePort
   ## HTTP Port
   ##
   port: 80
@@ -288,7 +288,7 @@ service:
 ingress:
   ## Set to true to enable ingress record generation
   ##
-  enabled: false
+  enabled: true
 
   ## Set this to true in order to add the corresponding annotations for cert-manager
   ##
@@ -296,7 +296,7 @@ ingress:
 
   ## When the ingress is enabled, a host pointing to this will be created
   ##
-  hostname: wordpress.local
+  hostname: stg.takefin.org
 
   ## Ingress annotations done as key:value pairs
   ## For a full list of possible ingress annotations, please see
